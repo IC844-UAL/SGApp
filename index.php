@@ -13,24 +13,6 @@
       <hr class="my-4">
       <p>PHP sample application connected to a MySQL database to list a customer catalog</p>
     </div>
-    <?php
-    // Get database connection parameters from environment variables (set by app.yaml)
-    $host = getenv('MYSQL_HOST');
-    $user = getenv('MYSQL_USER');
-    $pass = getenv('MYSQL_PASSWORD');
-    $db = "sg_db";
-    
-    // Display environment variables for verification
-    echo "<div class='alert alert-info mb-4' role='alert'>";
-    echo "<h5 class='alert-heading'>Environment Variables (from app.yaml):</h5>";
-    echo "<ul class='mb-0'>";
-    echo "<li><strong>MYSQL_HOST:</strong> " . ($host ? '<span class="text-success">' . htmlspecialchars($host) . '</span>' : '<span class="text-danger">Not set</span>') . "</li>";
-    echo "<li><strong>MYSQL_USER:</strong> " . ($user ? '<span class="text-success">' . htmlspecialchars($user) . '</span>' : '<span class="text-danger">Not set</span>') . "</li>";
-    echo "<li><strong>MYSQL_PASSWORD:</strong> " . ($pass ? '<span class="text-success">Set (' . strlen($pass) . ' characters)</span>' : '<span class="text-danger">Not set</span>') . "</li>";
-    echo "<li><strong>Database:</strong> " . htmlspecialchars($db) . "</li>";
-    echo "</ul>";
-    echo "</div>";
-    ?>
     <table class="table table-striped table-responsive">
       <thead>
         <tr>
@@ -45,82 +27,23 @@
       </thead>
       <tbody>
         <?php
-        // Check if environment variables are set
-        if (empty($host) || empty($user) || empty($pass)) {
-            echo "</tbody></table></div>";
-            echo "<div class='container mt-4'>";
-            echo "<div class='alert alert-warning' role='alert'>";
-            echo "<h4 class='alert-heading'>Missing Environment Variables!</h4>";
-            echo "<p>Please ensure the following environment variables are set in app.yaml:</p>";
-            echo "<ul>";
-            if (empty($host)) echo "<li><strong>MYSQL_HOST</strong> is not set</li>";
-            if (empty($user)) echo "<li><strong>MYSQL_USER</strong> is not set</li>";
-            if (empty($pass)) echo "<li><strong>MYSQL_PASSWORD</strong> is not set</li>";
-            echo "</ul>";
-            echo "<p class='mb-0'>When deployed to App Engine, these are set from app.yaml automatically.</p>";
-            echo "</div>";
-            echo "</div>";
-        } else {
-            // Attempt database connection using environment variables from app.yaml
-            $conexion = @mysqli_connect($host, $user, $pass, $db);
 
-            // Check connection and display error if failed
-            if (!$conexion) {
-            $error_message = mysqli_connect_error();
-            $error_code = mysqli_connect_errno();
-            echo "</tbody></table></div>";
-            echo "<div class='container mt-4'>";
-            echo "<div class='alert alert-danger' role='alert'>";
-            echo "<h4 class='alert-heading'>Database Connection Error!</h4>";
-            echo "<p><strong>Error Code:</strong> " . htmlspecialchars($error_code) . "</p>";
-            echo "<p><strong>Error Message:</strong> " . htmlspecialchars($error_message) . "</p>";
-            echo "<hr>";
-            echo "<p class='mb-0'><strong>Connection Details:</strong></p>";
-            echo "<ul class='mb-0'>";
-            echo "<li><strong>Host:</strong> " . htmlspecialchars($host) . "</li>";
-            echo "<li><strong>User:</strong> " . htmlspecialchars($user) . "</li>";
-            echo "<li><strong>Database:</strong> " . htmlspecialchars($db) . "</li>";
-            echo "<li><strong>Password:</strong> " . (empty($pass) ? '<span class="text-warning">Not set</span>' : '<span class="text-success">Set</span>') . "</li>";
-            echo "</ul>";
-            echo "</div>";
-            echo "</div>";
-        } else {
-            // Connection successful, execute query
-            $cadenaSQL = "select * from s_customer";
-            $resultado = mysqli_query($conexion, $cadenaSQL);
+        $conexion = mysqli_connect(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), "SG");
 
-            // Check if query failed
-            if (!$resultado) {
-                echo "</tbody></table></div>";
-                echo "<div class='container mt-4'>";
-                echo "<div class='alert alert-warning' role='alert'>";
-                echo "<h4 class='alert-heading'>Query Error!</h4>";
-                echo "<p><strong>Error:</strong> " . htmlspecialchars(mysqli_error($conexion)) . "</p>";
-                echo "<p><strong>Query:</strong> " . htmlspecialchars($cadenaSQL) . "</p>";
-                echo "</div>";
-                echo "</div>";
-            } else {
-                // Check if there are any rows
-                if (mysqli_num_rows($resultado) == 0) {
-                    echo "<tr><td colspan='7' class='text-center'>No customers found in the database.</td></tr>";
-                } else {
-                    // Display rows
-                    while ($fila = mysqli_fetch_object($resultado)) {
-                        echo "<tr><td> " . htmlspecialchars($fila->name) . 
-                        "</td><td>" . htmlspecialchars($fila->credit_rating) .
-                        "</td><td>" . htmlspecialchars($fila->address) .
-                        "</td><td>" . htmlspecialchars($fila->city) .
-                        "</td><td>" . htmlspecialchars($fila->state) .
-                        "</td><td>" . htmlspecialchars($fila->country) .
-                        "</td><td>" . htmlspecialchars($fila->zip_code) .
-                        "</td></tr>";
-                    }
-                }
-                mysqli_close($conexion);
-            }
-        }
-        }
-        ?>
+        $cadenaSQL = "select * from s_customer";
+        $resultado = mysqli_query($conexion, $cadenaSQL);
+
+        while ($fila = mysqli_fetch_object($resultado)) {
+         echo "<tr><td> " .$fila->name . 
+         "</td><td>" . $fila->credit_rating .
+         "</td><td>" . $fila->address .
+         "</td><td>" . $fila->city .
+         "</td><td>" . $fila->state .
+         "</td><td>" . $fila->country .
+         "</td><td>" . $fila->zip_code .
+         "</td></tr>";
+       }
+       ?>
      </tbody>
    </table>
  </div>
