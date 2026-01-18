@@ -28,7 +28,7 @@
       <tbody>
         <?php
 
-        $conexion = mysqli_connect(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), "sg-db");
+        $conexion = mysqli_connect(getenv('MYSQL_HOST'), getenv('MYSQL_USER'), getenv('MYSQL_PASSWORD'), "sg_db");
 
         $cadenaSQL = "select * from s_customer";
         $resultado = mysqli_query($conexion, $cadenaSQL);
